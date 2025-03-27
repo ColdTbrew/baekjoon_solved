@@ -1,32 +1,30 @@
 import sys
 input = sys.stdin.readline
 
-TC = int(input().strip())
+TC = int(input())
 for _ in range(TC):
     n, m, w = map(int, input().split())
-
     edges = []
 
+    # 도로 (양방향)
     for _ in range(m):
         s, e, t = map(int, input().split())
         edges.append((s, e, t))
         edges.append((e, s, t))
+    # 웜홀 (단방향, 음수)
     for _ in range(w):
         s, e, t = map(int, input().split())
         edges.append((s, e, -t))
     
     def bellman_ford():
-        dists = [1e9] * (n+1)
-
-        for _ in range(n-1): # 벨만 포드 알고리즘은 n-1 번만 완화를 수행해도 최단거리가 다 구해짐
+        dists = [0] * (n + 1)  # 모든 정점을 0으로 초기화
+        
+        for i in range(n):
             for s, e, t in edges:
-                if dists[s] + t < dists[e]:
+                if dists[e] > dists[s] + t:
                     dists[e] = dists[s] + t
-
-            
-        for s, e, t in edges: # 하지만 한번 더 돌렸을때 갱신이 된다면 음수의 사이클이 존재한다는 의미
-            if dists[s] + t < dists[e]:
-                return True
+                    if i == n - 1:  # N번째 갱신
+                        return True
         return False
     
     if bellman_ford():
