@@ -1,6 +1,5 @@
 import sys
 from collections import deque
-from itertools import combinations
 
 input = sys.stdin.readline
 
@@ -44,24 +43,36 @@ def spread_virus(temp_lab):
 def get_safe_area(lab):
     return sum(row.count(0) for row in lab)
 
+# 벽 3개 선택 조합 생성 (재귀)
+def generate_combinations(empty_cells, selected, start, max_safe_area):
+    # 벽 3개가 선택된 경우
+    if len(selected) == 3:
+        # 지도 복사
+        temp_lab = [row[:] for row in lab]
+        
+        # 벽 설치
+        for x, y in selected:
+            temp_lab[x][y] = 1
+        
+        # 바이러스 확산
+        spread_virus(temp_lab)
+        
+        # 안전 영역 계산
+        safe_area = get_safe_area(temp_lab)
+        
+        # 최대값 갱신 ( nonlocal 사용 대신 리스트로 전달 )
+        max_safe_area[0] = max(max_safe_area[0], safe_area)
+        return
+    
+    # 빈 칸을 순회하며 조합 생성
+    for i in range(start, len(empty_cells)):
+        selected.append(empty_cells[i])
+        generate_combinations(empty_cells, selected, i + 1, max_safe_area)
+        selected.pop()
+
 # 최대 안전 영역 찾기
-max_safe_area = 0
-for walls in combinations(empty_cells, 3):
-    # 지도 복사
-    temp_lab = [row[:] for row in lab]
-    
-    # 벽 설치
-    for x, y in walls:
-        temp_lab[x][y] = 1
-    
-    # 바이러스 확산
-    spread_virus(temp_lab)
-    
-    # 안전 영역 계산
-    safe_area = get_safe_area(temp_lab)
-    
-    # 최대값 갱신
-    max_safe_area = max(max_safe_area, safe_area)
+max_safe_area = [0]  # 리스트로 감싸서 재귀 내에서 갱신
+generate_combinations(empty_cells, [], 0, max_safe_area)
 
 # 결과 출력
-print(max_safe_area)
+print(max_safe_area[0])
