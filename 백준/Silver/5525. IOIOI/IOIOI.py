@@ -8,19 +8,18 @@ M = int(input().strip())
 line = list(input().strip())
 # print(line)
 count = 0
-target = list('I'+'OI'*N)
-for i in range(M):
-    j = i+2*N
-    if j >= M:
-        continue
-    # print("i, j", i, j)
-    hubo = line[i:j+1]
-    # print("target, hubo", target, hubo)
-    is_same = True
-    for k in range(0, 1+2*N):
-        if hubo[k] != target[k]:
-            is_same = False
-    if is_same:
-        # print("same")
-        count += 1
+i = 0
+
+while i < M-2:
+    if line[i] == 'I' and i + 2 < M and line[i+1] == 'O' and line[i+2] == 'I':
+        oi_count = 0
+        j = i
+        while j + 2 < M and line[j+1] == 'O' and line[j+2] == 'I':
+            oi_count += 1
+            j += 2
+        if oi_count >= N:
+            count += oi_count - N + 1
+        i = j
+    else:
+        i += 1
 print(count)
