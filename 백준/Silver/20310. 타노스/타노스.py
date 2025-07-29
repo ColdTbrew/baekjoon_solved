@@ -1,26 +1,33 @@
-string = input().strip()
 from collections import Counter
-string_counter = Counter(string)
 
-ans_len = 0
-for i, c in string_counter.items():
-    ans_len += c//2
-    string_counter[i] = c//2
+s = input().strip()
 
-candidate_list = []
-for i, c in string_counter.items():
-    candidate_list.extend([i] * c)
+s_counter = Counter(s)
+total_zeros = s_counter['0']
+total_ones = s_counter['1']
 
-# print(candidate_list)
-candidate_list.sort()
-from itertools import permutations
-ans = []
-for p in permutations(candidate_list, ans_len):
-    # print("permute")
-    # print(p)
-    tem = "".join(p)
-    ans.append(tem)
-    break
-# print(ans)
-# ans.sort()
-print(ans[0])
+num_zeros_to_remove = total_zeros // 2
+num_ones_to_remove = total_ones // 2
+
+remove_indices = set()
+
+current_ones_removed = 0
+for i in range(len(s)):
+    if s[i] == '1':
+        if current_ones_removed < num_ones_to_remove:
+            remove_indices.add(i)
+            current_ones_removed += 1
+
+current_zeros_removed = 0
+for i in range(len(s) - 1, -1, -1):
+    if s[i] == '0':
+        if current_zeros_removed < num_zeros_to_remove and i not in remove_indices:
+            remove_indices.add(i)
+            current_zeros_removed += 1
+
+result_s_prime = []
+for i in range(len(s)):
+    if i not in remove_indices:
+        result_s_prime.append(s[i])
+
+print("".join(result_s_prime))
